@@ -1,0 +1,153 @@
+# Coleta de Dados de Ações via API com Python
+
+## Visão Geral do Projeto
+
+Este projeto apresenta um script Python (`api_script.py`) que demonstra como coletar dados de ações financeiras utilizando uma API pública, especificamente a API da Alpha Vantage. Diferente do web scraping, que extrai dados diretamente de páginas HTML, a abordagem via API é mais robusta, confiável e geralmente mais rápida, pois interage com um serviço projetado para fornecer dados estruturados. O script faz requisições HTTP para a API, processa as respostas JSON e salva as informações relevantes (ticker, preço atual, variação, volume e última atualização) em um arquivo CSV.
+
+O objetivo é fornecer um exemplo claro de como integrar dados financeiros de uma fonte externa via API, com foco na manipulação de respostas JSON, tratamento de erros de rede e API, e persistência dos dados em um formato comum e de fácil uso como o CSV. Este script é ideal para desenvolvedores e analistas que precisam de acesso programático a dados de mercado de ações para análise, visualização ou automação.
+
+## Funcionalidades Detalhadas
+
+-   **Coleta de Dados Abrangente**: Obtém uma variedade de dados de cotação global para tickers específicos, incluindo:
+    -   `Ticker`: Símbolo da ação (ex: IBM).
+    -   `Preco_Atual`: O preço mais recente da ação.
+    -   `Variacao`: A variação percentual do preço da ação.
+    -   `Volume`: O volume de negociação da ação.
+    -   `Ultima_Atualizacao`: A data da última negociação ou atualização dos dados.
+-   **Integração com API Externa**: Utiliza a biblioteca `requests` para interagir com a API RESTful da Alpha Vantage, enviando requisições GET e recebendo respostas em formato JSON.
+-   **Processamento de JSON**: Analisa as respostas JSON da API para extrair os campos de dados relevantes e formatá-los para uso.
+-   **Persistência de Dados em CSV**: Salva os dados coletados em um arquivo CSV (`dados_acoes_api.csv`), garantindo que o cabeçalho seja escrito apenas uma vez e que novas execuções adicionem dados sem sobrescrever os existentes.
+-   **Tratamento de Erros Avançado**: Incorpora mecanismos de tratamento de erros para lidar com:
+    -   **Erros de Conexão/Rede**: Captura exceções de rede (`requests.exceptions.RequestException`) que podem ocorrer durante a comunicação com a API.
+    -   **Erros de Resposta HTTP**: Verifica o status da resposta HTTP (`response.raise_for_status()`) para identificar e reportar erros do lado do servidor (códigos 4xx ou 5xx).
+    -   **Erros de Parsing JSON**: Lida com casos em que a resposta da API não é um JSON válido (`ValueError`).
+    -   **Dados Ausentes da API**: Verifica se a estrutura de dados esperada (`
+
+
+Global Quote`) está presente na resposta da API, informando quando um ticker não retorna dados válidos.
+
+## Pré-requisitos
+
+Para executar este script, você precisará ter o Python instalado em seu sistema. Recomenda-se o uso do Python 3.x.
+
+-   **Python**: Baixe e instale a versão mais recente do Python em [python.org](https://www.python.org/).
+
+### Instalação de Dependências
+
+A única biblioteca Python necessária é `requests`, que pode ser instalada via `pip`. Abra seu terminal ou prompt de comando e execute o seguinte comando:
+
+```bash
+pip install requests
+```
+
+-   `requests`: Biblioteca HTTP para Python, essencial para fazer requisições à API.
+
+## Configuração da API
+
+Para que o script funcione corretamente, você precisará de uma chave de API válida da Alpha Vantage. A Alpha Vantage oferece uma chave de API gratuita para uso não comercial, com limites de taxa.
+
+Siga os passos abaixo para obter sua chave e configurá-la no script:
+
+1.  **Obtenha sua Chave de API**: Acesse o site oficial da Alpha Vantage ([https://www.alphavantage.co/](https://www.alphavantage.co/)) e registre-se para obter sua chave de API gratuita. A chave será exibida após o registro.
+
+2.  **Configure a Chave no Script**: Abra o arquivo `api_script.py` em um editor de texto. Localize a linha que define a variável `ALPHA_VANTAGE_API_KEY`:
+
+    ```python
+    ALPHA_VANTAGE_API_KEY = "YOUR_ALPHA_VANTAGE_API_KEY"
+    ```
+
+    Substitua `"YOUR_ALPHA_VANTAGE_API_KEY"` pela chave de API que você obteve no site da Alpha Vantage. Por exemplo:
+
+    ```python
+    ALPHA_VANTAGE_API_KEY = "SUA_CHAVE_REAL_AQUI"
+    ```
+
+    **Importante**: Mantenha sua chave de API em segurança e evite publicá-la em repositórios públicos (como o GitHub) sem o uso de variáveis de ambiente ou outros métodos de segurança. Para este exemplo, a inclusão direta no script é para simplicidade, mas em projetos reais, considere usar variáveis de ambiente ou um arquivo de configuração `.env`.
+
+## Como Usar o Script
+
+Siga os passos abaixo para executar o script e coletar os dados de ações via API:
+
+1.  **Baixe o Script**: Faça o download do arquivo `api_script.py` para o seu computador ou clone o repositório completo do GitHub:
+
+    ```bash
+    git clone https://github.com/seu-usuario/seu-repositorio.git
+    cd seu-repositorio
+    ```
+
+2.  **Configure sua Chave de API**: Certifique-se de ter configurado sua chave de API da Alpha Vantage no arquivo `api_script.py` conforme as instruções na seção "Configuração da API" acima.
+
+3.  **Configuração de Tickers (Opcional)**: Abra o arquivo `api_script.py` em um editor de texto. Na seção `if __name__ == "__main__":`, você encontrará uma lista de tickers de exemplo:
+
+    ```python
+    tickers = ["IBM", "TSLA", "AMZN"] # Exemplos de tickers
+    ```
+
+    Você pode modificar esta lista para incluir os tickers das ações que deseja consultar na API.
+
+4.  **Execute o Script**: Abra seu terminal ou prompt de comando, navegue até o diretório onde você salvou o script e execute-o:
+
+    ```bash
+    python api_script.py
+    ```
+
+    O script exibirá mensagens de progresso no console e, ao finalizar, informará que os dados foram salvos.
+
+## Saída de Dados
+
+Após a execução bem-sucedida, um arquivo chamado `dados_acoes_api.csv` será criado (ou atualizado) no mesmo diretório do script. Este arquivo CSV estará formatado com as seguintes colunas:
+
+| Coluna             | Descrição                                      | Exemplo           |
+| :----------------- | :--------------------------------------------- | :---------------- |
+| `Ticker`           | Símbolo da ação                                | `IBM`             |
+| `Preco_Atual`      | Preço atual da ação                            | `145.23`          |
+| `Variacao`         | Variação percentual do preço da ação           | `-0.15%`          |
+| `Volume`           | Volume de negociação da ação                   | `1234567`         |
+| `Ultima_Atualizacao` | Data da última atualização dos dados da API    | `2025-08-15`      |
+
+Exemplo de conteúdo do `dados_acoes_api.csv`:
+
+```csv
+Ticker,Preco_Atual,Variacao,Volume,Ultima_Atualizacao
+IBM,145.23,-0.15%,1234567,2025-08-15
+TSLA,850.50,+2.10%,5432109,2025-08-15
+AMZN,150.75,-0.50%,9876543,2025-08-15
+```
+
+## Estrutura do Código
+
+O script é modularizado em funções para clareza e manutenção:
+
+-   `get_stock_data_from_api(ticker)`:
+    -   Recebe um `ticker` como entrada.
+    -   Constrói a URL da requisição para a API da Alpha Vantage, incluindo a chave de API.
+    -   Faz a requisição HTTP usando `requests` e tenta decodificar a resposta JSON.
+    -   Realiza validações para garantir que a resposta contém os dados esperados (`"Global Quote"`).
+    -   Extrai e formata os campos de dados relevantes.
+    -   Retorna um dicionário com os dados formatados ou `None` em caso de erro ou dados ausentes.
+
+-   `save_to_csv(data, filename)`:
+    -   Recebe um dicionário de `data` (dados de uma única ação) e o `filename` do arquivo CSV.
+    -   Verifica se o arquivo CSV já existe e se está vazio para decidir se o cabeçalho deve ser escrito.
+    -   Abre o arquivo em modo de adição (`'a'`) para anexar novas linhas de dados.
+    -   Utiliza `csv.DictWriter` para escrever o dicionário de dados como uma linha no CSV, mapeando as chaves do dicionário para os nomes das colunas.
+
+-   `if __name__ == "__main__":` bloco:
+    -   Define a lista de `tickers` para os quais os dados serão coletados.
+    -   Itera sobre a lista de tickers, chamando `get_stock_data_from_api` para cada um.
+    -   Acumula todos os dados coletados em uma lista (`all_api_data`).
+    -   No final da execução, salva todos os dados acumulados em um único arquivo CSV, sobrescrevendo o arquivo se ele já existir para garantir que o cabeçalho seja escrito corretamente para o conjunto completo de dados.
+
+## Considerações e Limitações
+
+-   **Limites da API Gratuita**: A Alpha Vantage impõe limites de taxa para suas chaves de API gratuitas (geralmente 5 requisições por minuto e 500 requisições por dia). Se você precisar de um volume maior de dados ou acesso mais frequente, será necessário considerar uma assinatura premium.
+-   **Qualidade dos Dados**: Embora as APIs sejam mais confiáveis que o web scraping para dados estruturados, a qualidade e a pontualidade dos dados dependem da fonte da API. Sempre verifique a documentação da API para entender a frequência de atualização dos dados.
+-   **Chave de API**: A inclusão da chave de API diretamente no código é aceitável para exemplos simples, mas para aplicações de produção, é altamente recomendável usar variáveis de ambiente, um arquivo de configuração `.env` (e adicioná-lo ao `.gitignore`), ou um serviço de gerenciamento de segredos para proteger suas credenciais.
+-   **Expansibilidade**: O script pode ser facilmente expandido para coletar outros tipos de dados fornecidos pela Alpha Vantage (como dados históricos, informações de empresas, etc.) ajustando a função da API e os parâmetros da URL.
+
+
+## Licença
+
+Este projeto está licenciado sob a Licença MIT. Veja o arquivo `LICENSE` para mais detalhes. (Se você tiver um arquivo LICENSE, mencione-o aqui. Caso contrário, remova esta seção ou adicione um.)
+
+
